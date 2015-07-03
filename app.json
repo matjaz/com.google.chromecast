@@ -1,0 +1,37 @@
+{
+	"id": "com.google.chromecast",
+	"version": "1.0",
+	"name": {
+		"en": "Google Chromecast"
+	},
+	"description": {
+		"en": "Connect Homey with your Google Chromecast to send video to your TV"
+	},
+	"author": {
+		"name": "Emile Nijssen",
+		"website": "http://www.emilenijssen.nl"
+	},
+	"dependencies": {
+		"chromecast": "*"
+	},
+	"flow": {
+		"actions": [
+			{
+				"method": "castYoutube",
+				"title": {
+					"en": "Cast a YouTube video",
+					"nl": "Cast een YouTube video"
+				},
+				"args": [
+					{
+						"name": "youtube_id",
+						"type": "text",
+						"placeholder": {
+							"en": "HbH2CWb53iU"
+						}
+					}
+				]	
+			}
+		]
+	}
+}
