@@ -1,55 +1,44 @@
 "use strict";
-  
+
+var YouTube				= require('youtube-node');
+var youTube;
+ 
 function App() 
 {
-	this.chromecast = '';
+	
 }
 
 module.exports = App;
 
 App.prototype.init = function(){
 	
-	var mdns = Homey.module('mdns');
+	youTube = new YouTube();
+	youTube.setKey('AIzaSyB1OOSpTREs85WUMvIgJvLTZKye4BVsoFU');
 	
-	// find chromecast using mdns
-	var browser = mdns.createBrowser(mdns.tcp('googlecast'));
-	
-	browser.on('serviceUp', function(service) {
-		Homey.log('chromecast found: `' + service.name + '` at ' + service.addresses[0] + ':' + service.port);		
-		this.chromecast = service.addresses[0];
-		browser.stop();
-	}.bind(this));
-	
-	browser.start();
+	Homey.manager('flow').on('action.castYoutube', onFlowActionCastYouTube);
+	Homey.manager('flow').on('action.castYoutube.autocomplete', onFlowActionCastYouTubeAutocomplete);
 	
 }
 
-App.prototype.castYoutube = function( youtube_id ) {
-	
-	Homey.log('castYoutube: ' + youtube_id );
+function onFlowActionCastYouTube( args, callback ) {
+	Homey.manager('drivers').getDriver('chromecast').playYoutube( args.chromecast.data.ip, args.youtube_id.id )
+}
+
+function onFlowActionCastYouTubeAutocomplete(value, callback){
 		
-	var Client  = Homey.module('castv2-client').Client;
-	var Youtube = Homey.module('castv2-youtube').Youtube;
-
-	var client = new Client();
-	client.connect( this.chromecast , function() {
-		client.launch(Youtube, function(err, player) {
-			player.load( youtube_id );
-		});
+	youTube.search(value, 5, function(error, result) {
+		if (error) return;
+		
+		var videos = [];
+		result.items.forEach(function(video){
+			videos.push({
+				id		: video.id.videoId,
+				name	: video.snippet.title,
+				icon	: video.snippet.thumbnails.default.url
+			})
+		})
+					
+		callback( videos );
 	});
 	
-	client.on('error', function(err) {
-		Homey.error('Error: ' + err.message);
-		client.close();
-	});
-
-
 }
-
-App.prototype.events = {}
-App.prototype.events.flow = {}
-App.prototype.events.flow.actions = {}
-App.prototype.events.flow.actions.castYoutube = function( callback, args ){	
-	this.castYoutube( args.youtube_id );
-	if( typeof callback == 'function' ) callback.call();
-};

@@ -12,8 +12,33 @@
 		"website": "http://www.emilenijssen.nl"
 	},
 	"dependencies": {
-		"chromecast": "*"
+		"castv2-client": "*",
+		"castv2-youtube": "*",
+		"chromecast-scanner": "*"
 	},
+	"drivers": [
+		{
+			"id": "chromecast",
+			"name": {
+				"en": "Chromecast"
+			},
+			"class": "videoplayer",
+			"capabilities": [ "play", "pause", "stop" ],
+			"pair": [
+				{
+					"id": "list_chromecasts",
+					"template": "list_devices",
+					"navigation": {
+						"next": "add_chromecasts"
+					}
+				},
+				{
+					"id": "add_chromecasts",
+					"template": "add_devices"
+				}
+			]
+		}
+	],
 	"flow": {
 		"actions": [
 			{
@@ -24,10 +49,18 @@
 				},
 				"args": [
 					{
-						"name": "youtube_id",
-						"type": "text",
+						"name": "chromecast",
+						"type": "device",
 						"placeholder": {
-							"en": "HbH2CWb53iU"
+							"en": "Find a chromecast..."
+						},
+						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
+					},
+					{
+						"name": "youtube_id",
+						"type": "autocomplete",
+						"placeholder": {
+							"en": "Find a video..."
 						}
 					}
 				]	
