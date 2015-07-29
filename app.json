@@ -1,6 +1,7 @@
 {
 	"id": "com.google.chromecast",
-	"version": "1.0",
+	"version": "1.0.0",
+	"compatibility": "0.x || 1.x",
 	"name": {
 		"en": "Google Chromecast"
 	},
@@ -14,7 +15,8 @@
 	"dependencies": {
 		"castv2-client": "*",
 		"castv2-youtube": "*",
-		"chromecast-scanner": "*"
+		"youtube-node": "*",
+		"multicast-dns": "*"
 	},
 	"drivers": [
 		{
@@ -42,11 +44,12 @@
 	"flow": {
 		"actions": [
 			{
-				"method": "castYoutube",
+				"id": "castYoutube",
 				"title": {
 					"en": "Cast a YouTube video",
 					"nl": "Cast een YouTube video"
 				},
+				"fluidArgs": true,
 				"args": [
 					{
 						"name": "chromecast",
