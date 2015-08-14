@@ -2,6 +2,7 @@
 	"id": "com.google.chromecast",
 	"version": "1.0.0",
 	"compatibility": "0.x || 1.x",
+	"category": "video",
 	"name": {
 		"en": "Google Chromecast"
 	},
@@ -11,6 +12,10 @@
 	"author": {
 		"name": "Emile Nijssen",
 		"website": "http://www.emilenijssen.nl"
+	},
+	"images": {
+		"large": "./assets/images/large.jpg",
+		"small": "./assets/images/small.jpg"
 	},
 	"dependencies": {
 		"castv2-client": "*",
@@ -23,6 +28,10 @@
 			"id": "chromecast",
 			"name": {
 				"en": "Chromecast"
+			},
+			"images": {
+				"large": "./drivers/chromecast/assets/images/large.jpg",
+				"small": "./drivers/chromecast/assets/images/small.jpg"
 			},
 			"class": "videoplayer",
 			"capabilities": [ "play", "pause", "stop" ],
