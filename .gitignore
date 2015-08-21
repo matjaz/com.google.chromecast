@@ -1,3 +1,9 @@
+# nodejs files
 node_modules
-userconf.json
+
+# homey files
 userdata
+userconf.json
+
+# client id & secret
+env.json

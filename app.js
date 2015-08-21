@@ -2,21 +2,18 @@
 
 var YouTube				= require('youtube-node');
 var youTube;
- 
-function App() 
-{
-	
-}
 
-module.exports = App;
+module.exports = self = {
 
-App.prototype.init = function(){
+	init: function(){
 	
-	youTube = new YouTube();
-	youTube.setKey('AIzaSyB1OOSpTREs85WUMvIgJvLTZKye4BVsoFU');
-	
-	Homey.manager('flow').on('action.castYoutube', onFlowActionCastYouTube);
-	Homey.manager('flow').on('action.castYoutube.autocomplete', onFlowActionCastYouTubeAutocomplete);
+		youTube = new YouTube();
+		youTube.setKey( Homey.env.youtube_key );
+		
+		Homey.manager('flow').on('action.castYoutube', onFlowActionCastYouTube);
+		Homey.manager('flow').on('action.castYoutube.autocomplete', onFlowActionCastYouTubeAutocomplete);
+		
+	}
 	
 }
 
