@@ -6,7 +6,7 @@ var mdns				= require('multicast-dns');
 
 var self = module.exports;
 
-var chromecasts = [];
+var chromecasts = global.chromecasts = [];
 
 self.init = function( devices, callback ) {
 	
@@ -33,8 +33,7 @@ self.playYoutube = function( host, video_id ) {
 	var client = new Client();
 	client.connect(host, function() {
 		client.launch(Youtube, function(err, player) {
-
-			if (err) return console.error(err)
+			if (err) return Homey.error(err)
 
 			player.load( video_id );
 		});
@@ -57,7 +56,7 @@ function findChromecasts() {
 	
 	var onResponse = function(response) {
 		if( response.answers.length < 1 ) return;
-		
+				
 		var answer = response.answers[0];
 	
 		if (answer.name !== opts.service_name ||

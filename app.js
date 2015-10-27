@@ -3,12 +3,12 @@
 var YouTube				= require('youtube-node');
 var youTube;
 
-module.exports = self = {
+var self = module.exports = {
 
 	init: function(){
 	
 		youTube = new YouTube();
-		youTube.setKey( Homey.env.youtube_key );
+		youTube.setKey( Homey.env.YOUTUBE_KEY );
 		
 		Homey.manager('flow').on('action.castYoutube', onFlowActionCastYouTube);
 		Homey.manager('flow').on('action.castYoutube.autocomplete', onFlowActionCastYouTubeAutocomplete);
@@ -18,7 +18,8 @@ module.exports = self = {
 }
 
 function onFlowActionCastYouTube( args, callback ) {
-	Homey.manager('drivers').getDriver('chromecast').playYoutube( args.chromecast.data.ip, args.youtube_id.id )
+//	Homey.log('args', args, global.chromecasts)
+	Homey.manager('drivers').getDriver('chromecast').playYoutube( '192.168.100.103', args.youtube_id.id )
 }
 
 function onFlowActionCastYouTubeAutocomplete(value, callback){
