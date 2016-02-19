@@ -1,99 +1,121 @@
-"use strict";
+'use strict'
 
-var Client              = require('castv2-client').Client;
-var Youtube             = require('castv2-youtube').Youtube;
-var mdns				= require('multicast-dns');
+var ytdl     = require('ytdl-core')
+var ytdlUtil = require('ytdl-core/lib/util')
+var ChromecastAPI = require('chromecast-api')
 
-var self = module.exports;
+var devices = []
 
-var chromecasts = global.chromecasts = [];
+exports.init = function (devices, callback) {
 
-self.init = function( devices, callback ) {
-	
-	// scan for chromecasts
-	findChromecasts();
-	
-	callback();
+  // Homey.log('init', devices)
+
+  discoverChromecasts()
+
+  callback()
 }
 
-self.capabilities = {
-	
-}
-
-self.pair = {
-	
-	list_devices: function( callback, emit, data ) {
-		callback( chromecasts );
-	}
-	
-}
-
-self.playYoutube = function( host, video_id ) {
-
-	var client = new Client();
-	client.connect(host, function() {
-		client.launch(Youtube, function(err, player) {
-			if (err) return Homey.error(err)
-
-			player.load( video_id );
-		});
-	});
-
-	client.on('error', function(err) {
-		Homey.error(err.message);
-		client.close();
-	});
+exports.capabilities = {
 
 }
 
-function findChromecasts() {
-	
-	var opts = {
-		service_name: '_googlecast._tcp.local',
-		service_type: 'PTR',
-		mdns: {}
-	};
-	
-	var onResponse = function(response) {
-		if( response.answers.length < 1 ) return;
-				
-		var answer = response.answers[0];
-	
-		if (answer.name !== opts.service_name ||
-			answer.type !== opts.service_type) {
-			return;
-		}
-		
-		response.additionals = response.additionals.filter(function(entry){
-			return entry.type === 'A'
-		});
-		
-		response.additionals.forEach(function(chromecast){
-			chromecasts.push({
-				name: chromecast.name,
-				data: {
-					id: chromecast.name,
-					ip: chromecast.data
-				}
-			})
-		})
-		
-	};
-	
-	setTimeout(function(){
-		browser.removeListener('response', onResponse);
-		browser.destroy();		
-	}, 60 * 1000);
-	
-	var browser = mdns(opts.mdns);
-		
-	browser.on('response', onResponse)
-	
-	browser.query({
-		questions: [{
-			name: opts.service_name,
-			type: opts.service_type
-		}]
-	});
-	
+exports.pair = function (socket) {
+  socket.on('list_devices', function (data, callback) {
+    callback(null, devices.map(function (chromecast) {
+        return {
+          name: chromecast.config.name,
+          data: {
+            id: chromecast.config.name,
+            ip: chromecast.host
+          }
+        }
+     }))
+  })
+}
+
+exports.playVideo = function (deviceName, videoUrl, callback) {
+  // Homey.log(deviceName, devices)
+  var device = devices.filter(function (device) {
+    return device.config && device.config.name === deviceName
+  })[0]
+  // Homey.log('device', device)
+  if (device) {
+    getVideoInfo(videoUrl, function (err, media) {
+      if (err) {
+      	Homey.error(err)
+      	callback && callback(err)
+      	return
+      }
+
+      // Homey.log('media', media)
+      device.play(media, 0, function () {
+        // Homey.log('Playing in your chromecast')
+        callback && callback(null, true)
+      })
+    })
+  } else if (callback) {
+  	callback(new Error('Device ' + deviceName + 'not found'))
+  }
+}
+
+function discoverChromecasts () {
+  var browser = new ChromecastAPI.Browser()
+
+  browser.on('deviceOn', function (device) {
+    devices.push(device)
+    // Homey.log('devices', devices)
+  })
+
+  setTimeout(function () {
+    // Homey.log('stop discover', devices)
+    browser.stop()
+    browser = null
+  }, 60000)
+
+  // Homey.log('devices', devices)
+}
+
+function getVideoInfo (url, callback) {
+  if (isYoutubeVideo(url)) {
+    var options = {
+      filter: function (format) {
+        return format.type.indexOf('video/mp4') === 0
+      }
+    }
+    getYTVideoInfo(url, options, function (err, info) {
+      if (err) return callback(err)
+
+      // Homey.log('YT info', info)
+      callback(null, {
+        url: info.url,
+        cover: {
+          title: info.title,
+          url: info.iurlmaxres
+        }
+      })
+    })
+  } else {
+    callback(null, {
+      url: url
+    })
+  }
+}
+
+function isYoutubeVideo (url) {
+  return /(?:youtu\.be)|(?:youtube\.com)/.test(url)
+}
+
+function getYTVideoInfo (url, options, callback) {
+  ytdl.getInfo(url, function (err, info) {
+    if (err) {
+      callback(err)
+      return
+    }
+    var format = ytdlUtil.chooseFormat(info.formats, options)
+    if (format instanceof Error) {
+      callback(format)
+    } else {
+      callback(null, format)
+    }
+  })
 }

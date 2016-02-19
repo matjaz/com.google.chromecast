@@ -1,6 +1,6 @@
 {
 	"id": "com.google.chromecast",
-	"version": "0.9.1",
+	"version": "0.10.0",
 	"compatibility": "0.x || 1.x",
 	"category": "video",
 	"name": {
@@ -13,15 +13,21 @@
 		"name": "Emile Nijssen",
 		"website": "http://www.emilenijssen.nl"
 	},
+	"contributors": {
+		"developers": [
+			{
+				"name": "Matjaž Lipuš",
+				"website": "http://matjaz.info"
+			}
+		]
+	},
 	"images": {
 		"large": "./assets/images/large.jpg",
 		"small": "./assets/images/small.jpg"
 	},
 	"dependencies": {
-		"castv2-client": "*",
-		"castv2-youtube": "*",
-		"youtube-node": "*",
-		"multicast-dns": "*"
+		"ytdl-core": "*",
+		"chromecast-api": "*"
 	},
 	"drivers": [
 		{
@@ -53,10 +59,10 @@
 	"flow": {
 		"actions": [
 			{
-				"id": "castYoutube",
+				"id": "castVideo",
 				"title": {
-					"en": "Cast a YouTube video",
-					"nl": "Cast een YouTube video"
+					"en": "Cast a video",
+					"nl": "Cast een video"
 				},
 				"fluidArgs": true,
 				"args": [
@@ -69,13 +75,13 @@
 						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
 					},
 					{
-						"name": "youtube_id",
-						"type": "autocomplete",
+						"name": "url",
+						"type": "text",
 						"placeholder": {
-							"en": "Find a video..."
+							"en": "URL"
 						}
 					}
-				]	
+				]
 			}
 		]
 	}
