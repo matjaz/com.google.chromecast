@@ -1,0 +1,20 @@
+{
+  "name": "homey-chromecast",
+  "version": "0.10.0",
+  "description": "Cast video to chromecast",
+  "main": "app.js",
+  "dependencies": {
+    "chromecast-api": "^0.2.1",
+    "ytdl-core": "^0.7.10"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matjaz/com.google.chromecast.git"
+  },
+  "author": "",
+  "license": "ISC"
+}
