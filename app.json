@@ -59,10 +59,32 @@
 	"flow": {
 		"actions": [
 			{
+				"id": "castYouTube",
+				"title": {
+					"en": "Cast a YouTube video",
+					"nl": "Cast een YouTube video"
+				},
+				"fluidArgs": true,
+				"args": [
+					{
+						"name": "chromecast",
+						"type": "device",
+						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
+					},
+					{
+						"name": "youtube_id",
+						"type": "autocomplete",
+						"placeholder": {
+							"en": "Find a YouTube video..."
+						}
+					}
+				]
+			},
+			{
 				"id": "castVideo",
 				"title": {
-					"en": "Cast a video",
-					"nl": "Cast een video"
+					"en": "Cast a video url",
+					"nl": "Cast een video url"
 				},
 				"fluidArgs": true,
 				"args": [
