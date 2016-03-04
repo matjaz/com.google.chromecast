@@ -24,9 +24,13 @@ exports.pair = function(socket) {
 	})
 }
 
-function discoverChromecasts() {
+function discoverChromecasts(resetList) {
 	var browser = new ChromecastAPI.Browser()
 	browser.on('deviceOn', function(device) {
+		if (resetList) {
+			devices.length = 0
+			resetList = false
+		}
 		devices.push(device)
 		device.on('status', function(status) {
 			Homey.manager('flow').trigger('chromecastStatusChanged', {
@@ -36,6 +40,10 @@ function discoverChromecasts() {
 		// Homey.log('devices', devices)
 	})
 	// Homey.log('devices', devices)
+	setTimeout(function() {
+		// rediscover devices
+		discoverChromecasts(true)
+	}, 600000) // 10 min
 }
 
 exports.playVideo = function(deviceName, videoUrl, callback) {
