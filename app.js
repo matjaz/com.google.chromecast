@@ -12,6 +12,40 @@ exports.init = function() {
 	Homey.manager('flow').on('action.castYouTube', onFlowActionCastYouTube)
 	Homey.manager('flow').on('action.castYouTube.youtube_id.autocomplete', onFlowActionCastYouTubeAutocomplete);
 	Homey.manager('flow').on('action.castVideo', onFlowActionCastVideo)
+
+	var deviceActions = [
+		'stop',
+		'pause',
+		'unpause',
+		'mute',
+		'unmute'
+	]
+	deviceActions.forEach(function (action) {
+		Homey.manager('flow').on('action.' + action + 'Video', function onFlowActionCastVideo(callback, args) {
+			// Homey.log(action, args)
+			Homey.manager('drivers')
+				.getDriver('chromecast')
+				[action](args.chromecast.id, callback)
+		})
+	})
+	deviceActions = [
+		'seek',
+		'seekTo'
+	]
+	deviceActions.forEach(function (action) {
+		Homey.manager('flow').on('action.' + action + 'Video', function onFlowActionCastVideo(callback, args) {
+			// Homey.log(action, args)
+			Homey.manager('drivers')
+				.getDriver('chromecast')
+				[action](args.chromecast.id, args.time, callback)
+		})
+	})
+	Homey.manager('flow').on('action.setVolumeVideo', function onFlowActionCastVideo(callback, args) {
+		// Homey.log('volume', args)
+		Homey.manager('drivers')
+			.getDriver('chromecast')
+			.setVolume(args.chromecast.id, args.level, callback)
+	})
 }
 
 function onFlowActionCastYouTube(callback, args) {

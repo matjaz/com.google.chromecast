@@ -58,6 +58,29 @@
 		}
 	],
 	"flow": {
+		"triggers": [
+			{
+				"id": "chromecastStatusChanged",
+				"title": {
+					"en": "Chromecast status changed"
+				},
+				"args": [
+					{
+						"name": "chromecast",
+						"type": "device",
+						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
+					}
+				],
+				"tokens": [
+					{
+						"name": "status",
+						"title": {
+							"en": "Status"
+						}
+					}
+				]
+			}
+		],
 		"actions": [
 			{
 				"id": "castYouTube",
@@ -82,19 +105,144 @@
 				]
 			},
 			{
+				"id": "stopVideo",
+				"title": {
+					"en": "Stop casting"
+				},
+				"args": [
+					{
+						"name": "chromecast",
+						"type": "device",
+						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
+					}
+				]
+			},
+			{
+				"id": "pauseVideo",
+				"title": {
+					"en": "Pause"
+				},
+				"args": [
+					{
+						"name": "chromecast",
+						"type": "device",
+						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
+					}
+				]
+			},
+			{
+				"id": "unpauseVideo",
+				"title": {
+					"en": "Unpause"
+				},
+				"args": [
+					{
+						"name": "chromecast",
+						"type": "device",
+						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
+					}
+				]
+			},
+			{
+				"id": "seekVideo",
+				"title": {
+					"en": "Seek by"
+				},
+				"args": [
+					{
+						"name": "chromecast",
+						"type": "device",
+						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
+					},
+					{
+						"name": "time",
+						"type": "number",
+						"min": 0,
+						"placeholder": {
+							"en": "seconds"
+						}
+					}
+				]
+			},
+			{
+				"id": "seekToVideo",
+				"title": {
+					"en": "Seek to"
+				},
+				"args": [
+					{
+						"name": "chromecast",
+						"type": "device",
+						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
+					},
+					{
+						"name": "time",
+						"type": "text",
+						"placeholder": {
+							"en": "1:15 or seconds from start"
+						}
+					}
+				]
+			},
+			{
+				"id": "setVolumeVideo",
+				"title": {
+					"en": "Set volume"
+				},
+				"args": [
+					{
+						"name": "chromecast",
+						"type": "device",
+						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
+					},
+					{
+						"name": "level",
+						"type": "number",
+						"min": 0,
+						"max": 100,
+						"placeholder": {
+							"en": "Volume level %"
+						}
+					}
+				]
+			},
+			{
+				"id": "muteVideo",
+				"title": {
+					"en": "Mute"
+				},
+				"args": [
+					{
+						"name": "chromecast",
+						"type": "device",
+						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
+					}
+				]
+			},
+			{
+				"id": "unmuteVideo",
+				"title": {
+					"en": "Unmute"
+				},
+				"args": [
+					{
+						"name": "chromecast",
+						"type": "device",
+						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
+					}
+				]
+			},
+			{
 				"id": "castVideo",
 				"title": {
-					"en": "Cast a video url",
-					"nl": "Cast een video url"
+					"en": "Cast a video URL",
+					"nl": "Cast een video URL"
 				},
 				"fluidArgs": true,
 				"args": [
 					{
 						"name": "chromecast",
 						"type": "device",
-						"placeholder": {
-							"en": "Find a chromecast..."
-						},
 						"filter": "driver_uri=homey:app:com.google.chromecast&driver_id=chromecast"
 					},
 					{
