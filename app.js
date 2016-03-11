@@ -1,28 +1,60 @@
 'use strict'
 
-var YouTube				= require('youtube-node');
+var YouTube = require('youtube-node');
 var youTube;
 
 exports.init = function() {
 	
 	youTube = new YouTube();
 	youTube.setKey( Homey.env.YOUTUBE_KEY );
+	youTube.addParam('type', 'video');
 		
 	Homey.manager('flow').on('action.castYouTube', onFlowActionCastYouTube)
 	Homey.manager('flow').on('action.castYouTube.youtube_id.autocomplete', onFlowActionCastYouTubeAutocomplete);
 	Homey.manager('flow').on('action.castVideo', onFlowActionCastVideo)
+
+	var deviceActions = [
+		'stop',
+		'pause',
+		'unpause',
+		'mute',
+		'unmute'
+	]
+	deviceActions.forEach(function (action) {
+		Homey.manager('flow').on('action.' + action + 'Video', function onFlowActionCastVideo(callback, args) {
+			// Homey.log(action, args)
+			Homey.manager('drivers')
+				.getDriver('chromecast')
+				[action](args.chromecast.id, callback)
+		})
+	})
+	deviceActions = [
+		'seek',
+		'seekTo'
+	]
+	deviceActions.forEach(function (action) {
+		Homey.manager('flow').on('action.' + action + 'Video', function onFlowActionCastVideo(callback, args) {
+			// Homey.log(action, args)
+			Homey.manager('drivers')
+				.getDriver('chromecast')
+				[action](args.chromecast.id, args.time, callback)
+		})
+	})
+	Homey.manager('flow').on('action.setVolumeVideo', function onFlowActionCastVideo(callback, args) {
+		// Homey.log('volume', args)
+		Homey.manager('drivers')
+			.getDriver('chromecast')
+			.setVolume(args.chromecast.id, args.level, callback)
+	})
 }
 
 function onFlowActionCastYouTube(callback, args) {
-	console.log(args)
 	Homey.manager('drivers')
 		.getDriver('chromecast')
 		.playVideo(args.chromecast.id, 'https://www.youtube.com/watch?v=' + args.youtube_id.id, callback)
 }
 
 function onFlowActionCastYouTubeAutocomplete( callback, args ){
-				
-	youTube.addParam('type', 'video');
 	youTube.search(args.query, 5, function(error, result) {
 		if (error) return;
 		
