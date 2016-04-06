@@ -144,7 +144,7 @@ function getVideoInfo(url, callback) {
 	if (isYoutubeVideo(url)) {
 		var options = {
 			filter: function(format) {
-				return format.type.indexOf('video/mp4') === 0
+				return format.type && format.type.indexOf('video/mp4') === 0
 			}
 		}
 		getYTVideoInfo(url, options, function(err, info) {
