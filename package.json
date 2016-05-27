@@ -4,9 +4,7 @@
   "description": "Cast video to chromecast",
   "main": "app.js",
   "dependencies": {
-    "chromecast-api": "^0.2.1",
-    "youtube-node": "^1.3.0",
-    "ytdl-core": "^0.7.10"
+    "chromecast-api": "^0.2.4"
   },
   "devDependencies": {},
   "scripts": {

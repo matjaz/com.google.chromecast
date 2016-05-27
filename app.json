@@ -27,7 +27,6 @@
 		"small": "./assets/images/small.jpg"
 	},
 	"dependencies": {
-		"ytdl-core": "*",
 		"chromecast-api": "*"
 	},
 	"drivers": [
