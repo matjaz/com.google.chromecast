@@ -1,14 +1,11 @@
 'use strict'
 
-var YouTube = require('youtube-node');
-var youTube;
+var querystring = require('querystring');
 
 exports.init = function() {
-	
-	youTube = new YouTube();
-	youTube.setKey( Homey.env.YOUTUBE_KEY );
-	youTube.addParam('type', 'video');
-		
+
+	getYouTubeApp(function() {})
+
 	Homey.manager('flow').on('action.castYouTube', onFlowActionCastYouTube)
 	Homey.manager('flow').on('action.castYouTube.youtube_id.autocomplete', onFlowActionCastYouTubeAutocomplete);
 	Homey.manager('flow').on('action.castVideo', onFlowActionCastVideo)
@@ -55,19 +52,34 @@ function onFlowActionCastYouTube(callback, args) {
 }
 
 function onFlowActionCastYouTubeAutocomplete( callback, args ){
-	youTube.search(args.query, 5, function(error, result) {
-		if (error) return;
-		
-		var videos = [];
-		result.items.forEach(function(video){
-			videos.push({
-				id		: video.id.videoId,
-				name	: video.snippet.title,
-				image	: video.snippet.thumbnails.default.url
+	getYouTubeApp(function (err, youTubeApp) {
+		if (!youTubeApp) {
+			// no results
+			callback(null, []);
+			return;
+		}
+		var qs = querystring.stringify({
+			q: args.query,
+			type: 'video',
+			part: 'id,snippet',
+			maxResults: 5
+		});
+		youTubeApp.get(`/search?${qs}`, function(error, result) {
+			if (error || !result || !result.items) {
+				callback(error || new Error('Search did not return any results.'));
+				return;
+			}
+
+			var videos = result.items.map(function(video) {
+				return {
+					id		: video.id.videoId,
+					name	: video.snippet.title,
+					image	: video.snippet.thumbnails.default.url
+				};
 			})
-		})
-					
-		callback( null, videos );
+
+			callback( null, videos );
+		});
 	});
 	
 }
@@ -76,4 +88,25 @@ function onFlowActionCastVideo(callback, args) {
 	Homey.manager('drivers')
 		.getDriver('chromecast')
 		.playVideo(args.chromecast.id, args.url, callback)
+}
+
+function getYouTubeApp(callback) {
+	var api = Homey.manager('api');
+	var app = new api.App('com.youtube');
+	app.isInstalled(function(err, installed) {
+		if (err) {
+			// Homey.error(err);
+			callback(err);
+			return;
+		}
+
+		if (!installed) {
+			// console.log("youtube app is not installed!");
+			// TODO: remove (action) cards
+			callback(null);
+			return;
+		}
+		exports.youTubeApp = app;
+		callback(null, app);
+	});
 }

@@ -1,15 +1,15 @@
 'use strict'
-var ytdl = require('ytdl-core')
-var ytdlUtil = require('ytdl-core/lib/util')
+
+var querystring = require('querystring')
 var ChromecastAPI = require('chromecast-api')
 var devices = []
+
 exports.init = function(devices, callback) {
 	// Homey.log('init', devices)
 	discoverChromecasts()
 	callback()
 }
 
-exports.capabilities = {}
 exports.pair = function(socket) {
 	socket.on('list_devices', function(data, callback) {
 		callback(null, devices.map(function(chromecast) {
@@ -142,12 +142,16 @@ function parseTime(time) {
 
 function getVideoInfo(url, callback) {
 	if (isYoutubeVideo(url)) {
-		var options = {
-			filter: function(format) {
-				return format.type && format.type.indexOf('video/mp4') === 0
-			}
+		var youTubeApp = Homey.app.youTubeApp
+		if (!youTubeApp) {
+			callback(new Error('YouTube playback not supported. YouTube app not found.'))
+			return
 		}
-		getYTVideoInfo(url, options, function(err, info) {
+		var qs = {
+			url: url,
+			'filter.type': 'video/mp4'
+		}
+		youTubeApp.get('/videoInfo?' + querystring.stringify(qs), function(err, info) {
 			if (err) return callback(err)
 			// Homey.log('YT info', info)
 			callback(null, {
@@ -167,19 +171,4 @@ function getVideoInfo(url, callback) {
 
 function isYoutubeVideo(url) {
 	return /(?:youtu\.be)|(?:youtube\.com)/.test(url)
-}
-
-function getYTVideoInfo(url, options, callback) {
-	ytdl.getInfo(url, function(err, info) {
-		if (err) {
-			callback(err)
-			return
-		}
-		var format = ytdlUtil.chooseFormat(info.formats, options)
-		if (format instanceof Error) {
-			callback(format)
-		} else {
-			callback(null, format)
-		}
-	})
 }
