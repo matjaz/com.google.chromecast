@@ -3,9 +3,12 @@ var ytdl = require('ytdl-core')
 var ytdlUtil = require('ytdl-core/lib/util')
 var ChromecastAPI = require('chromecast-api')
 var devices = []
+var devices_data
+
 exports.init = function(devices, callback) {
 	// Homey.log('init', devices)
 	discoverChromecasts()
+	devices_data = devices
 	callback()
 }
 
@@ -33,8 +36,11 @@ function discoverChromecasts(resetList) {
 		}
 		devices.push(device)
 		device.on('status', function(status) {
-			Homey.manager('flow').trigger('chromecastStatusChanged', {
+			const tokens = {
 				status: status.playerState
+			}
+			getDeviceData(device.config.name, function (device_data) {
+				Homey.manager('flow').triggerDevice('chromecastStatusChanged', tokens, {}, device_data)
 			})
 		})
 		// Homey.log('devices', devices)
@@ -123,6 +129,17 @@ deviceActions.forEach(function(action) {
 function getDevice(deviceName, success, error) {
 	var device = devices.filter(function(device) {
 		return device.config && device.config.name === deviceName
+	})[0]
+	if (device) {
+		success(device)
+	} else if (error) {
+		error(new Error('Device ' + deviceName + 'not found'))
+	}
+}
+
+function getDeviceData(deviceName, success, error) {
+	var device = devices_data.filter(function(device) {
+		return device.id === deviceName
 	})[0]
 	if (device) {
 		success(device)
