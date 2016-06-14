@@ -41,6 +41,10 @@ function discoverChromecasts(resetList) {
 			getDeviceData(device.config.name, function (device_data) {
 				Homey.manager('flow').triggerDevice('chromecastStatusChanged', tokens, {}, device_data)
 			})
+			Homey.manager('api').realtime('status', {
+				id: device.config.name,
+				status: tokens.status
+			})
 		})
 		// Homey.log('devices', devices)
 	})
