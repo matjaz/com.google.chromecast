@@ -142,24 +142,25 @@ function parseTime(time) {
 
 function getVideoInfo(url, callback) {
 	if (isYoutubeVideo(url)) {
-		var youTubeApp = Homey.app.youTubeApp
-		if (!youTubeApp) {
-			callback(new Error('YouTube playback not supported. YouTube app not found.'))
-			return
-		}
-		var qs = {
-			url: url,
-			'filter.type': 'video/mp4'
-		}
-		youTubeApp.get('/videoInfo?' + querystring.stringify(qs), function(err, info) {
-			if (err) return callback(err)
-			// Homey.log('YT info', info)
-			callback(null, {
-				url: info.url,
-				cover: {
-					title: info.title,
-					url: info.iurlmaxres
-				}
+		Homey.app.getYouTubeApp(function (err, youTubeApp) {
+			if (err || !youTubeApp) {
+				callback(err || new Error('YouTube playback not supported. YouTube app not found.'))
+				return
+			}
+			var qs = {
+				url: url,
+				'filter.type': 'video/mp4'
+			}
+			youTubeApp.get('/videoInfo?' + querystring.stringify(qs), function(err, info) {
+				if (err) return callback(err)
+				// Homey.log('YT info', info)
+				callback(null, {
+					url: info.url,
+					cover: {
+						title: info.title,
+						url: info.iurlmaxres
+					}
+				})
 			})
 		})
 	} else {

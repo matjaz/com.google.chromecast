@@ -4,8 +4,6 @@ var querystring = require('querystring');
 
 exports.init = function() {
 
-	getYouTubeApp(function() {})
-
 	Homey.manager('flow').on('action.castYouTube', onFlowActionCastYouTube)
 	Homey.manager('flow').on('action.castYouTube.youtube_id.autocomplete', onFlowActionCastYouTubeAutocomplete);
 	Homey.manager('flow').on('action.castVideo', onFlowActionCastVideo)
@@ -106,7 +104,8 @@ function getYouTubeApp(callback) {
 			callback(null);
 			return;
 		}
-		exports.youTubeApp = app;
 		callback(null, app);
 	});
 }
+
+exports.getYouTubeApp = getYouTubeApp;
