@@ -40,8 +40,8 @@
 				"large": "./drivers/chromecast/assets/images/large.jpg",
 				"small": "./drivers/chromecast/assets/images/small.jpg"
 			},
-			"class": "videoplayer",
-			"capabilities": [ "play", "pause", "stop" ],
+			"class": "other",
+			"capabilities": [ ],
 			"pair": [
 				{
 					"id": "list_chromecasts",
