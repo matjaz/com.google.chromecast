@@ -6,7 +6,7 @@ var devices = []
 exports.init = function(devices, callback) {
 	// Homey.log('init', devices)
 	discoverChromecasts()
-	callback()
+	callback(null, true)
 }
 
 exports.capabilities = {}
